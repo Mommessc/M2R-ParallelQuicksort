@@ -1,5 +1,7 @@
 parallelQuicksort: parallelQuicksort.o
 
+parallelMultiLevel: parallelMultiLevel.o
+
 PEDANTIC_PARANOID_FREAK =       -g -Wall -Wshadow -Wcast-align \
 				-Waggregate-return -Wmissing-prototypes -Wmissing-declarations \
 				-Wstrict-prototypes -Wmissing-prototypes -Wmissing-declarations \
@@ -12,6 +14,8 @@ WARNINGS = 			$(PEDANTIC_PARANOID_FREAK)
 CFLAGS = $(WARNINGS) -pthread -lrt -std=c99 
 LIBS = 
 
+all: parallelMultiLevel parallelQuicksort
+
 %: %.o
 	$(CC) $(INCLUDES) $(DEFS) $(CFLAGS) $^ $(LIBS) -o $@ 
 
@@ -19,4 +23,4 @@ LIBS =
 	$(CC) $(INCLUDES) $(DEFS) $(CFLAGS) -c -o $@ $<
 
 clean:
-	rm -f parallelQuicksort *.o *~
+	rm -f parallelQuicksort parallelMultiLevel *.o *~

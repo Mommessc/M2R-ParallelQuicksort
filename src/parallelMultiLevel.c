@@ -14,16 +14,17 @@
 #include <pthread.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <unistd.h>
 #include <time.h>
 #include <sys/time.h>
 #include <string.h>
 
 #define DNUM 1000000
-#define DTHREAD_LEVEL 4
+#define DTHREAD_LEVEL 8
 
-double do_seq_sort(struct timeval* start, struct timeval* end, double* lyst, int NUM);
-double do_built_in_sort(struct timeval* start, struct timeval* end, double* lyst, int NUM);
-double do_parrallel_sort(struct timeval* start, struct timeval* end, double* lyst, int NUM, int THREAD_LEVEL);
+void do_seq_sort(struct timeval* start, struct timeval* end, double* lyst, int NUM);
+void do_built_in_sort(struct timeval* start, struct timeval* end, double* lyst, int NUM);
+void do_parrallel_sort(struct timeval* start, struct timeval* end, double* lyst, int NUM, int THREAD_LEVEL);
 
 
 //for sequential and parallel implementation
@@ -48,17 +49,11 @@ struct thread_data {
 //for the builtin qsort, for fun:
 int compare_doubles(const void *a, const void *b);
 
-/*
-Main method:
--generate random list
--time sequential quicksort
--time parallel quicksort
--time standard qsort
-*/
+
 int main(int argc, char *argv[])
 {
   struct timeval start, end;
-  double diff1, diff2, diff3;
+  //double diff;
 
   srand(time(NULL));            //seed random
 
@@ -89,73 +84,69 @@ int main(int argc, char *argv[])
   }
 
 
+
   int rand_num = rand()%6;
   if(rand_num == 0) {
       //copy list and sequential sort.
       memcpy(lyst, lystbck, NUM * sizeof(double));
-      diff1 = do_seq_sort(&start, &end, lyst, NUM);
+      do_parrallel_sort(&start, &end, lyst, NUM, THREAD_LEVEL-2);
       //copy list and parrallel sort 
       memcpy(lyst, lystbck, NUM * sizeof(double));
-      diff2 = do_parrallel_sort(&start, &end, lyst, NUM, THREAD_LEVEL);
+      do_parrallel_sort(&start, &end, lyst, NUM, THREAD_LEVEL);
       // built-in for reference:
       memcpy(lyst, lystbck, NUM * sizeof(double));
-      diff3 = do_built_in_sort(&start, &end, lyst, NUM);
+      do_parrallel_sort(&start, &end, lyst, NUM, THREAD_LEVEL+2);
   } else if (rand_num == 1) {
       //copy list and sequential sort.
       memcpy(lyst, lystbck, NUM * sizeof(double));
-      diff1 = do_seq_sort(&start, &end, lyst, NUM);
+      do_parrallel_sort(&start, &end, lyst, NUM, THREAD_LEVEL-2);
       //built-in for reference:
       memcpy(lyst, lystbck, NUM * sizeof(double));
-      diff3 = do_built_in_sort(&start, &end, lyst, NUM);
+      do_parrallel_sort(&start, &end, lyst, NUM, THREAD_LEVEL+2);
       //copy list and parrallel sort 
       memcpy(lyst, lystbck, NUM * sizeof(double));
-      diff2 = do_parrallel_sort(&start, &end, lyst, NUM, THREAD_LEVEL);
+      do_parrallel_sort(&start, &end, lyst, NUM, THREAD_LEVEL);
   } else if (rand_num == 2) {
       //copy list and parrallel sort 
       memcpy(lyst, lystbck, NUM * sizeof(double));
-      diff2 = do_parrallel_sort(&start, &end, lyst, NUM, THREAD_LEVEL);
+      do_parrallel_sort(&start, &end, lyst, NUM, THREAD_LEVEL);
       //copy list and sequential sort.
       memcpy(lyst, lystbck, NUM * sizeof(double));
-      diff1 = do_seq_sort(&start, &end, lyst, NUM);
+      do_parrallel_sort(&start, &end, lyst, NUM, THREAD_LEVEL-2);
       // built-in for reference:
       memcpy(lyst, lystbck, NUM * sizeof(double));
-      diff3 = do_built_in_sort(&start, &end, lyst, NUM);
+      do_parrallel_sort(&start, &end, lyst, NUM, THREAD_LEVEL+2);
   } else if (rand_num == 3) {
       //copy list and parrallel sort 
       memcpy(lyst, lystbck, NUM * sizeof(double));
-      diff2 = do_parrallel_sort(&start, &end, lyst, NUM, THREAD_LEVEL);
+      do_parrallel_sort(&start, &end, lyst, NUM, THREAD_LEVEL);
       // built-in for reference:
       memcpy(lyst, lystbck, NUM * sizeof(double));
-      diff3 = do_built_in_sort(&start, &end, lyst, NUM);
+      do_parrallel_sort(&start, &end, lyst, NUM, THREAD_LEVEL+2);
       //copy list and sequential sort.
       memcpy(lyst, lystbck, NUM * sizeof(double));
-      diff1 = do_seq_sort(&start, &end, lyst, NUM);
+      do_parrallel_sort(&start, &end, lyst, NUM, THREAD_LEVEL-2);
   } else if (rand_num == 4) {
       // built-in for reference:
       memcpy(lyst, lystbck, NUM * sizeof(double));
-      diff3 = do_built_in_sort(&start, &end, lyst, NUM);
+      do_parrallel_sort(&start, &end, lyst, NUM, THREAD_LEVEL+2);
       //copy list and parrallel sort 
       memcpy(lyst, lystbck, NUM * sizeof(double));
-      diff2 = do_parrallel_sort(&start, &end, lyst, NUM, THREAD_LEVEL);
+      do_parrallel_sort(&start, &end, lyst, NUM, THREAD_LEVEL);
       //copy list and sequential sort.
       memcpy(lyst, lystbck, NUM * sizeof(double));
-      diff1 = do_seq_sort(&start, &end, lyst, NUM);
+      do_parrallel_sort(&start, &end, lyst, NUM, THREAD_LEVEL-2);
   } else { 
       // built-in for reference:
       memcpy(lyst, lystbck, NUM * sizeof(double));
-      diff3 = do_built_in_sort(&start, &end, lyst, NUM);
+      do_parrallel_sort(&start, &end, lyst, NUM, THREAD_LEVEL+2);
       //copy list and sequential sort.
       memcpy(lyst, lystbck, NUM * sizeof(double));
-      diff1 = do_seq_sort(&start, &end, lyst, NUM);
+      do_parrallel_sort(&start, &end, lyst, NUM, THREAD_LEVEL-2);
       //copy list and parrallel sort 
       memcpy(lyst, lystbck, NUM * sizeof(double));
-      diff2 = do_parrallel_sort(&start, &end, lyst, NUM, THREAD_LEVEL);
+      do_parrallel_sort(&start, &end, lyst, NUM, THREAD_LEVEL);
   }
-
-
-  printf("Sequential quicksort took: %lf sec.\n", diff1);/*}}}*/
-  printf("Parallel quicksort took: %lf sec.\n", diff2);
-  printf("Built-in quicksort took: %lf sec.\n", diff3);/*}}}*/
 
 
 /*
@@ -217,43 +208,11 @@ int main(int argc, char *argv[])
 }
 
 
-double do_seq_sort(struct timeval* start, struct timeval* end, double* lyst, int NUM){
-  //Sequential mergesort, and timing./*{{{*/
-  double diff;
-  gettimeofday(start, NULL);
-  quicksort(lyst, NUM);
-  gettimeofday(end, NULL);
-
-  if (!isSorted(lyst, NUM)) {
-    printf("Oops, lyst did not get sorted by quicksort.\n");
-  }
-  //Compute time difference.
-  diff = (((*end).tv_sec * 1000000 + (*end).tv_usec)
-          - ((*start).tv_sec * 1000000 + (*start).tv_usec)) / 1000000.0;
-  
-  return diff;
-}
-
-double do_built_in_sort(struct timeval* start, struct timeval* end, double* lyst, int NUM){
-  double diff;/*{{{*/
-  gettimeofday(start, NULL);
-  qsort(lyst, NUM, sizeof(double), compare_doubles);
-  gettimeofday(end, NULL);
-
-  if (!isSorted(lyst, NUM)) {
-    printf("Oops, lyst did not get sorted by qsort.\n");
-  }
-  //Compute time difference.
-  diff = (((*end).tv_sec * 1000000 + (*end).tv_usec)
-          - ((*start).tv_sec * 1000000 + (*start).tv_usec)) / 1000000.0;
-  return diff;
-}
-
-double do_parrallel_sort(struct timeval* start, struct timeval* end, double* lyst, int NUM, int THREAD_LEVEL){
+void do_parrallel_sort(struct timeval* start, struct timeval* end, double* lyst, int NUM, int T_LEVEL){
   //Now, parallel quicksort./*{{{*/
   double diff;
   gettimeofday(start, NULL);
-  parallelQuicksort(lyst, NUM, THREAD_LEVEL);
+  parallelQuicksort(lyst, NUM, T_LEVEL);
   gettimeofday(end, NULL);
 
   if (!isSorted(lyst, NUM)) {
@@ -262,8 +221,7 @@ double do_parrallel_sort(struct timeval* start, struct timeval* end, double* lys
   //Compute time difference.
   diff = (((*end).tv_sec * 1000000 + (*end).tv_usec)
           - ((*start).tv_sec * 1000000 + (*start).tv_usec)) / 1000000.0;
-  
-  return diff;
+  printf("Parallel quicksort took: %lf sec with %d T_LEVEL.\n", diff, T_LEVEL);
 /*}}}*/
 }
 

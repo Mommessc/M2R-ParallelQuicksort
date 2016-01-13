@@ -1,0 +1,28 @@
+Informations about the machine used for experimentations: (command used : inxi -Fx and lscpu)
+kernel 3.16.0-4-amd64, Debian 8.2 64 bit
+Gcc version : 4.8.4 with given flags "PEDANTIC_PARANOID_FREAK"
+CPU: 4 cores with 2 thread per core, Intel(R) Core(TM) i5-2430M @2.40GHz 
+Cache L1d: 32K, L1i: 32K, L2: 256K, L3: 3072K
+Memory: 6GB
+
+
+Randomisation on the order of calling the 3 types of sort (6 different permutations).
+Creation of a program to call several times parallel sort with different thread levels.
+
+
+Apparently, with small array size a lower thread level is better (~size < 1M). With large arrays to sort, higher thread level is better.
+
+
+
+utiliser R pour randomiser/espacer correctement les array size : lhs ne marche pas
+x<-round(runif(100, min=100, max=1000000))
+
+scramble les array size (pas increasing order)
+
+calcul des moyennes et confidence interval -> plot
+
+analyse, linear model ? (n log n ?)
+quel est le plus rapide, au bout de quelle size ?
+
+impact of the thread level, at which size ?
+
